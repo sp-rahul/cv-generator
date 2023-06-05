@@ -1,10 +1,11 @@
-export const db: any = [
+export const items: any = [
     {
         id: 1,
         type: 'summary',
         heading: 'Summary',
         title: 'summary title 1',
         content: '23  trer '
+
     },
     {
         id: 2,

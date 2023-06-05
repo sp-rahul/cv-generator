@@ -1,26 +1,27 @@
 import React, {useContext} from 'react';
 import IconButton from "../../../@common/components/IconButton";
 import {MdDeleteForever, MdModeEdit} from "react-icons/md";
-import {iconButton, summary} from "../../../@common/style/style";
+import {iconButton} from "../../../@common/style/style";
 import TextInputShow, {inputType} from "../../../@common/components/TextInputShow";
 import {DBContext} from "../../../@common/context/DBContext";
 import {motion} from "framer-motion"
 import {useForm} from "react-hook-form";
 import {AiOutlineCheck} from "react-icons/ai";
 
-interface ISummary {
+interface IEducation {
     index: number
-    title: string
-    heading: string
-    content: string
+    result: string
+    institution: string
+    passing_year: string
 }
 
 type FormValues = {
-    title: string;
-    content: string;
+    result: string
+    institution: string
+    passing_year: string
 };
 
-function Summary(props: ISummary) {
+function Education(props: IEducation) {
     const {
         register, reset,
         setValue, getValues,
@@ -53,11 +54,11 @@ function Summary(props: ISummary) {
 
     React.useEffect(() => {
         reset({
-            title: props.title,
-            content: props.content
+            result: props.result,
+            institution: props.institution,
+            passing_year: props.passing_year,
         });
     }, [])
-
 
     return (
         <motion.form
@@ -70,19 +71,23 @@ function Summary(props: ISummary) {
                                         onclick={() => handleEdit(props.index)}/>}
                 {isEdit && <IconButton style={iconButton.primary} Icon={<AiOutlineCheck/>}
                                        onclick={() => handleEdit(props.index)}/>}
-
                 <IconButton style={iconButton.error} Icon={<MdDeleteForever/>}
                             onclick={() => handleDelete(props.index)}/>
             </div>
-            <TextInputShow type={inputType.text} style={summary.title} name={'title'} isEdit={isEdit}
+            <TextInputShow type={inputType.text} name={'result'} isEdit={isEdit}
                            register={register}
-                           defaultValue={props.title}
-                           value={getValues("title")}/>
+                           defaultValue={props.result}
+                           value={getValues("result")}/>
+
+            <TextInputShow type={inputType.text} name={'passing_year'} isEdit={isEdit}
+                           register={register}
+                           defaultValue={props.passing_year}
+                           value={getValues("passing_year")}/>
             <TextInputShow type={inputType.textarea}
-                           name={'content'} isEdit={isEdit} register={register} defaultValue={props.content}
-                           value={getValues("content")}/>
+                           name={'institution'} isEdit={isEdit} register={register} defaultValue={props.institution}
+                           value={getValues("institution")}/>
         </motion.form>
     );
 }
 
-export default Summary;
+export default Education;

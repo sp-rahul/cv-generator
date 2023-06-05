@@ -9,6 +9,10 @@ export interface IDropdown {
 }
 
 export enum Types {
+    'heading' = 'heading',
+    'line' = 'line',
     'summary' = 'summary',
     'education' = 'education',
+    'project' = 'project',
+    'basic_info' = 'basic_info',
 }

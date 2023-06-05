@@ -1,26 +1,31 @@
 import React, {useContext} from 'react';
 import IconButton from "../../../@common/components/IconButton";
 import {MdDeleteForever, MdModeEdit} from "react-icons/md";
-import {iconButton, summary} from "../../../@common/style/style";
+import {iconButton} from "../../../@common/style/style";
 import TextInputShow, {inputType} from "../../../@common/components/TextInputShow";
 import {DBContext} from "../../../@common/context/DBContext";
 import {motion} from "framer-motion"
 import {useForm} from "react-hook-form";
 import {AiOutlineCheck} from "react-icons/ai";
 
-interface ISummary {
+interface IBasic_info {
     index: number
-    title: string
-    heading: string
-    content: string
+    email: string,
+    phone: string,
+    github: string,
+    linkedin: string,
+    address: string,
 }
 
 type FormValues = {
-    title: string;
-    content: string;
+    email: string,
+    phone: string,
+    github: string,
+    linkedin: string,
+    address: string,
 };
 
-function Summary(props: ISummary) {
+function Basic_info(props: IBasic_info) {
     const {
         register, reset,
         setValue, getValues,
@@ -53,11 +58,15 @@ function Summary(props: ISummary) {
 
     React.useEffect(() => {
         reset({
-            title: props.title,
-            content: props.content
+            email: props.email,
+            phone: props.phone,
+            github: props.github,
+            linkedin: props.linkedin,
+            address: props.address,
+
+
         });
     }, [])
-
 
     return (
         <motion.form
@@ -70,19 +79,34 @@ function Summary(props: ISummary) {
                                         onclick={() => handleEdit(props.index)}/>}
                 {isEdit && <IconButton style={iconButton.primary} Icon={<AiOutlineCheck/>}
                                        onclick={() => handleEdit(props.index)}/>}
-
                 <IconButton style={iconButton.error} Icon={<MdDeleteForever/>}
                             onclick={() => handleDelete(props.index)}/>
             </div>
-            <TextInputShow type={inputType.text} style={summary.title} name={'title'} isEdit={isEdit}
+            <TextInputShow type={inputType.text} name={'email'} isEdit={isEdit}
                            register={register}
-                           defaultValue={props.title}
-                           value={getValues("title")}/>
-            <TextInputShow type={inputType.textarea}
-                           name={'content'} isEdit={isEdit} register={register} defaultValue={props.content}
-                           value={getValues("content")}/>
+                           defaultValue={props.email}
+                           value={getValues("email")}/>
+
+            <TextInputShow type={inputType.text} name={'phone'} isEdit={isEdit}
+                           register={register}
+                           defaultValue={props.phone}
+                           value={getValues("phone")}/>
+            <TextInputShow type={inputType.text} name={'linkedin'} isEdit={isEdit}
+                           register={register}
+                           defaultValue={props.linkedin}
+                           value={getValues("linkedin")}/>
+            <TextInputShow type={inputType.text} name={'github'} isEdit={isEdit}
+                           register={register}
+                           defaultValue={props.github}
+                           value={getValues("github")}/>
+            <TextInputShow type={inputType.text} name={'address'} isEdit={isEdit}
+                           register={register}
+                           defaultValue={props.address}
+                           value={getValues("address")}/>
+
+
         </motion.form>
     );
 }
 
-export default Summary;
+export default Basic_info;

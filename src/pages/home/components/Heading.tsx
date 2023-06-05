@@ -1,32 +1,30 @@
 import React, {useContext} from 'react';
 import IconButton from "../../../@common/components/IconButton";
 import {MdDeleteForever, MdModeEdit} from "react-icons/md";
-import {iconButton, summary} from "../../../@common/style/style";
+import {heading, iconButton} from "../../../@common/style/style";
 import TextInputShow, {inputType} from "../../../@common/components/TextInputShow";
 import {DBContext} from "../../../@common/context/DBContext";
 import {motion} from "framer-motion"
 import {useForm} from "react-hook-form";
 import {AiOutlineCheck} from "react-icons/ai";
 
-interface ISummary {
+interface IHeading {
     index: number
     title: string
-    heading: string
-    content: string
 }
 
 type FormValues = {
     title: string;
-    content: string;
 };
 
-function Summary(props: ISummary) {
+function Heading(props: IHeading) {
     const {
         register, reset,
         setValue, getValues,
         handleSubmit
     } = useForm<FormValues>();
-    const [isEdit, setIsEdit] = React.useState(false)
+
+    const [isEdit, setISdit] = React.useState(false)
     const {setData} = useContext(DBContext);
     const onSubmit = (data: any) => {
         setData((pre: any) => {
@@ -47,17 +45,15 @@ function Summary(props: ISummary) {
         if (isEdit) {
             handleSubmit(onSubmit)()
         }
-        setIsEdit(prev => !prev)
+        setISdit(pre => !pre)
 
     }
 
     React.useEffect(() => {
         reset({
             title: props.title,
-            content: props.content
         });
     }, [])
-
 
     return (
         <motion.form
@@ -70,19 +66,16 @@ function Summary(props: ISummary) {
                                         onclick={() => handleEdit(props.index)}/>}
                 {isEdit && <IconButton style={iconButton.primary} Icon={<AiOutlineCheck/>}
                                        onclick={() => handleEdit(props.index)}/>}
-
                 <IconButton style={iconButton.error} Icon={<MdDeleteForever/>}
                             onclick={() => handleDelete(props.index)}/>
             </div>
-            <TextInputShow type={inputType.text} style={summary.title} name={'title'} isEdit={isEdit}
+            <TextInputShow type={inputType.text} style={heading.title} name={'title'} isEdit={isEdit}
                            register={register}
                            defaultValue={props.title}
                            value={getValues("title")}/>
-            <TextInputShow type={inputType.textarea}
-                           name={'content'} isEdit={isEdit} register={register} defaultValue={props.content}
-                           value={getValues("content")}/>
+
         </motion.form>
     );
 }
 
-export default Summary;
+export default Heading;

@@ -8,25 +8,26 @@ import {motion} from "framer-motion"
 import {useForm} from "react-hook-form";
 import {AiOutlineCheck} from "react-icons/ai";
 
-interface ISummary {
-    index: number
-    title: string
-    heading: string
-    content: string
+interface IProject {
+    index: number;
+    title: string;
+    heading: string;
+    content: string;
+    duration: string;
+    description: string;
 }
 
 type FormValues = {
     title: string;
     content: string;
+    heading: string;
+    duration: string;
+    description: string;
 };
 
-function Summary(props: ISummary) {
-    const {
-        register, reset,
-        setValue, getValues,
-        handleSubmit
-    } = useForm<FormValues>();
-    const [isEdit, setIsEdit] = React.useState(false)
+function Project(props: IProject) {
+    const {register, reset, setValue, getValues, handleSubmit} = useForm<FormValues>();
+    const [isEdit, setISdit] = React.useState(false)
     const {setData} = useContext(DBContext);
     const onSubmit = (data: any) => {
         setData((pre: any) => {
@@ -47,17 +48,41 @@ function Summary(props: ISummary) {
         if (isEdit) {
             handleSubmit(onSubmit)()
         }
-        setIsEdit(prev => !prev)
+        setISdit(pre => !pre)
 
     }
 
     React.useEffect(() => {
         reset({
             title: props.title,
-            content: props.content
+            content: props.content,
+            heading: props.heading,
+            duration: props.duration,
+            description: props.description,
         });
     }, [])
 
+    const handleConvert = () => {
+        const desc: string = getValues("description");
+        console.log('desc', desc)
+        let array: string[] = []
+        if (typeof desc === 'string') {
+            array = desc.split(',');
+            console.log(array);
+        }
+
+        console.log('array', array)
+        return (
+            <ul className="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+
+                {array.map((el) => <li>
+                    {el}
+                </li>)}
+
+            </ul>
+        )
+
+    }
 
     return (
         <motion.form
@@ -70,7 +95,6 @@ function Summary(props: ISummary) {
                                         onclick={() => handleEdit(props.index)}/>}
                 {isEdit && <IconButton style={iconButton.primary} Icon={<AiOutlineCheck/>}
                                        onclick={() => handleEdit(props.index)}/>}
-
                 <IconButton style={iconButton.error} Icon={<MdDeleteForever/>}
                             onclick={() => handleDelete(props.index)}/>
             </div>
@@ -78,11 +102,22 @@ function Summary(props: ISummary) {
                            register={register}
                            defaultValue={props.title}
                            value={getValues("title")}/>
+
+            <TextInputShow type={inputType.text}
+                           name={'duration'} isEdit={isEdit} register={register} defaultValue={props.duration}
+                           value={getValues("duration")}/>
+
+
             <TextInputShow type={inputType.textarea}
-                           name={'content'} isEdit={isEdit} register={register} defaultValue={props.content}
-                           value={getValues("content")}/>
+                           name={'description'} isEdit={isEdit} register={register} defaultValue={props.description}
+
+            >
+                {handleConvert()}
+            </TextInputShow>
+
+
         </motion.form>
     );
 }
 
-export default Summary;
+export default Project;
