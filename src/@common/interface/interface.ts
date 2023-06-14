@@ -15,4 +15,5 @@ export enum Types {
     'education' = 'education',
     'project' = 'project',
     'basic_info' = 'basic_info',
+    'picture' = 'picture'
 }

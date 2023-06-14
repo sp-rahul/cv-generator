@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import IconButton from "../../../@common/components/IconButton";
 import {MdDeleteForever, MdModeEdit} from "react-icons/md";
 import {iconButton, summary} from "../../../@common/style/style";
@@ -7,14 +7,17 @@ import {DBContext} from "../../../@common/context/DBContext";
 import {motion} from "framer-motion"
 import {useForm} from "react-hook-form";
 import {AiOutlineCheck} from "react-icons/ai";
+import {handleDelete, handleEdit} from "../../../@common/functions/common";
 
 interface IProject {
+    id: string
     index: number;
     title: string;
     heading: string;
     content: string;
     duration: string;
     description: string;
+    is_new: boolean
 }
 
 type FormValues = {
@@ -27,30 +30,11 @@ type FormValues = {
 
 function Project(props: IProject) {
     const {register, reset, setValue, getValues, handleSubmit} = useForm<FormValues>();
-    const [isEdit, setISdit] = React.useState(false)
+    const [isEdit, setIsEdit] = React.useState(props?.is_new)
     const {setData} = useContext(DBContext);
-    const onSubmit = (data: any) => {
-        setData((pre: any) => {
-            pre[props.index] = {...pre[props.index], ...data};
-            return [...pre]
-        })
-    };
+    const {data} = useContext(DBContext)
+    const [count, setCount] = useState(1)
 
-    function handleDelete(index: number) {
-        setData((pre: any) => {
-            pre.splice(index, 1)
-            return [...pre]
-        })
-    }
-
-    function handleEdit(index: number) {
-        console.log('clicked')
-        if (isEdit) {
-            handleSubmit(onSubmit)()
-        }
-        setISdit(pre => !pre)
-
-    }
 
     React.useEffect(() => {
         reset({
@@ -64,11 +48,15 @@ function Project(props: IProject) {
 
     const handleConvert = () => {
         const desc: string = getValues("description");
-        console.log('desc', desc)
+        if (desc === '') {
+            return ''
+        }
         let array: string[] = []
         if (typeof desc === 'string') {
             array = desc.split(',');
             console.log(array);
+        } else {
+            return ''
         }
 
         console.log('array', array)
@@ -84,19 +72,22 @@ function Project(props: IProject) {
 
     }
 
+
     return (
         <motion.form
+            key={props.id}
             exit={{scale: [0.5, 0]}} animate={{
             scale: [0.5, 1],
             borderRadius: ["20%", "0%"],
-        }} className='border w-full text-left py-4  px-2 relative'>
+        }} className='group border w-full text-left py-4  px-2 relative'>
             <div className="absolute top-0 right-0 flex ">
-                {!isEdit && <IconButton style={iconButton.secondary} Icon={<MdModeEdit/>}
-                                        onclick={() => handleEdit(props.index)}/>}
-                {isEdit && <IconButton style={iconButton.primary} Icon={<AiOutlineCheck/>}
-                                       onclick={() => handleEdit(props.index)}/>}
+                <IconButton style={iconButton.secondary} Icon={!isEdit ? <MdModeEdit/> : <AiOutlineCheck/>}
+                            onclick={() => handleEdit(props.id, data, setData, handleSubmit, isEdit, setIsEdit)}/>
+
                 <IconButton style={iconButton.error} Icon={<MdDeleteForever/>}
-                            onclick={() => handleDelete(props.index)}/>
+                            onclick={() =>
+                                handleDelete(props.id, setData)
+                            }/>
             </div>
             <TextInputShow type={inputType.text} style={summary.title} name={'title'} isEdit={isEdit}
                            register={register}
@@ -112,7 +103,7 @@ function Project(props: IProject) {
                            name={'description'} isEdit={isEdit} register={register} defaultValue={props.description}
 
             >
-                {handleConvert()}
+                {!isEdit && handleConvert()}
             </TextInputShow>
 
 

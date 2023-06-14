@@ -1,6 +1,5 @@
-import React from "react"
+import React, {useEffect} from "react"
 import DropDown from "../../@common/components/DropDown";
-import {items as collection} from "../../db/items";
 import {Types} from "../../@common/interface/interface";
 import Summary from "./components/Summary";
 import {DBContext} from "../../@common/context/DBContext";
@@ -11,6 +10,7 @@ import Line from "./components/Line";
 import Project from "./components/Project";
 import Education from "./components/Education";
 import Basic_info from "./components/Basic_info";
+import Picture from "./components/Picture";
 
 type FormValues = {
     title: string;
@@ -21,19 +21,39 @@ type FormValues = {
     institution: string;
     result: string;
     passing_year: string;
+    subject: string;
     email: string,
     phone: string,
     github: string,
     linkedin: string,
     address: string,
+    picture: string,
 };
 export default function Home() {
+    let init = true
     const {
-        register, reset, setValue,
-        getValues, handleSubmit
+        register,
+        reset,
+        setValue,
+        getValues
     } = useForm<FormValues>();
 
-    const [data, setData] = React.useState(collection)
+    const [data, setData] = React.useState(() => {
+        const storedData = localStorage.getItem('data');
+        if (storedData) {
+            const dataFromStorage = JSON.parse(storedData)
+            return dataFromStorage
+        }
+        return []
+    })
+
+
+    useEffect(() => {
+        console.log('data', 'lcoal', data)
+        localStorage.setItem('data', JSON.stringify(data));
+    }, [data]);
+
+
     const dropDownItems = [
         {name: 'summary', type: Types.summary},
         {name: 'education', type: Types.education},
@@ -41,59 +61,45 @@ export default function Home() {
         {name: 'line', type: Types.line},
         {name: 'project', type: Types.project},
         {name: 'basic_info', type: Types.basic_info},
+        {name: 'picture', type: Types.picture},
     ]
 
     function renderSection(item: any) {
         switch (item.type) {
+
             case Types.summary:
-                return <Summary
-                    key={item.id}
-                    index={item.index}
-                    title={item.title}
-                    heading={item.heading}
-                    content={item.content}/>
+                return <Summary key={item?.id}
+                                {...item}/>
 
 
             case Types.heading:
-                return <Heading key={item.id} title={item.title} index={item.index}/>
+                return <Heading key={item.id} {...item}/>
+
             case Types.line:
-                return <Line index={item.index}/>
+                return <Line key={item.id} {...item}/>
 
             case Types.project:
                 return <Project
                     key={item.id}
-                    index={item.index}
-                    title={item.title}
-                    heading={item.heading}
-                    content={item.content}
-                    duration={item.duration}
-                    description={item.description}
-
+                    {...item}
 
                 />
             case Types.education:
                 return <Education
                     key={item.id}
-                    index={item.index}
-
-                    result={item.result}
-                    passing_year={item.passing_year}
-                    institution={item.institution}
+                    {...item}
 
                 />
 
             case Types.basic_info:
                 return <Basic_info
                     key={item.id}
-                    index={item.index}
-
-                    email={item.email}
-                    phone={item.phone}
-                    github={item.github}
-                    linkedin={item.linkedin}
-                    address={item.address}
+                    {...item}
 
                 />
+
+            case Types.picture:
+                return <Picture key={item.id} {...item}/>
 
 
             default:
@@ -103,10 +109,10 @@ export default function Home() {
 
     }
 
-
     return (
-        <DBContext.Provider value={{data, setData, register, reset, setValue, getValues}}>
-            <div className="mx-40 border rounded min-h-screen bg-gray-50 flex flex-col items-center">
+        <DBContext.Provider value={{data, setData, register, reset, setValue, getValues, init}}>
+
+            <div id="divToPrint" className="mx-40  rounded min-h-screen bg-gray-50 flex flex-col items-center">
 
 
                 <AnimatePresence>
@@ -116,8 +122,9 @@ export default function Home() {
                         })
                     }
                 </AnimatePresence>
-                <div>
+                <div data-html2canvas-ignore="true" className="m-2">
                     <DropDown items={dropDownItems}/>
+
                 </div>
             </div>
         </DBContext.Provider>

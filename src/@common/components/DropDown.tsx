@@ -3,47 +3,76 @@ import {Dropdown} from "flowbite-react";
 import {IDropdown, TItem, Types} from "../interface/interface";
 import {GrAddCircle} from "react-icons/gr";
 import {DBContext} from "../context/DBContext";
+import {v4 as uuid} from 'uuid';
+import {SetItem} from "../functions/common";
 
 
-var id = 4
 export default function DropDown(props: IDropdown) {
-    const {setData} = useContext(DBContext);
+    const {data, setData} = useContext(DBContext);
 
     function addNewItem(item: TItem) {
-        id += 1;
+        let id: string = uuid();
+        let newItem: boolean = true
+        console.log("id", id)
         switch (item.type) {
             case Types.heading:
                 setData((pre: any) => [...pre, {
                     id: id,
                     type: item.type,
                     title: 'Title heading',
+                    newItem: newItem,
+                    is_new: true
+
+
                 }])
                 break;
+
             case Types.summary:
                 setData((pre: any) => [...pre, {
                     id: id,
                     type: item.type,
-                    heading: 'heading summary',
-                    title: 'title summary',
-                    content: 'content summary',
+                    heading: '',
+                    title: '',
+                    content: '',
+                    is_new: true
                 }])
+
                 break;
             case Types.line:
                 setData((pre: any) => [...pre, {
                     id: id,
-                    type: item.type
+                    type: item.type,
+                    is_new: true
                 }])
+
                 break;
             case Types.project:
                 setData((pre: any) => [...pre, {
                     id: id,
                     type: item.type,
-                    heading: 'Heading project',
-                    title: 'Title',
-                    content: 'Content Project',
-                    duration: 'march 2020 - december 2020',
-                    description: 'js, java, c'
+                    heading: '',
+                    title: '',
+                    content: '',
+                    duration: '',
+                    description: '',
+                    is_new: true
                 }])
+
+                break;
+
+            case Types.education:
+                setData((pre: any) => [...pre, {
+                    id: id,
+                    type: item.type,
+
+                    result: '',
+                    institution: '',
+                    passing_year: '',
+                    subject: '',
+                    is_new: true
+
+                }])
+
                 break;
 
             case Types.basic_info:
@@ -56,21 +85,38 @@ export default function DropDown(props: IDropdown) {
                     github: 'github.com/sp-rahul',
                     linkedin: 'linked.com/abc',
                     address: 'Mirpur Dhaka',
+                    is_new: true
 
 
                 }])
+
                 break;
+
+            case Types.picture:
+                setData((pre: any) => [...pre, {
+                    id: id,
+                    type: item.type,
+                    is_new: true,
+                    picture: "",
+                }])
+
+                break;
+
             default:
                 break;
         }
+        SetItem(data)
 
     }
 
     return (
         <Dropdown
+            className="m-2 "
+            dismissOnClick={true}
             arrowIcon={true}
             floatingArrow={true}
             label={<GrAddCircle/>}
+
         >
             {
                 props.items.map((item: TItem) => {

@@ -7,47 +7,30 @@ import {DBContext} from "../../../@common/context/DBContext";
 import {motion} from "framer-motion"
 import {useForm} from "react-hook-form";
 import {AiOutlineCheck} from "react-icons/ai";
+import {handleDelete, handleEdit} from "../../../@common/functions/common";
 
 interface IHeading {
     index: number
     title: string
+    id: string
+    is_new: boolean
 }
 
 type FormValues = {
     title: string;
+    id: string
 };
 
 function Heading(props: IHeading) {
     const {
         register, reset,
-        setValue, getValues,
+        getValues,
         handleSubmit
     } = useForm<FormValues>();
 
-    const [isEdit, setISdit] = React.useState(false)
-    const {setData} = useContext(DBContext);
-    const onSubmit = (data: any) => {
-        setData((pre: any) => {
-            pre[props.index] = {...pre[props.index], ...data};
-            return [...pre]
-        })
-    };
+    const [isEdit, setIsEdit] = React.useState(props?.is_new)
+    const {data, setData} = useContext(DBContext);
 
-    function handleDelete(index: number) {
-        setData((pre: any) => {
-            pre.splice(index, 1)
-            return [...pre]
-        })
-    }
-
-    function handleEdit(index: number) {
-        console.log('clicked')
-        if (isEdit) {
-            handleSubmit(onSubmit)()
-        }
-        setISdit(pre => !pre)
-
-    }
 
     React.useEffect(() => {
         reset({
@@ -55,19 +38,24 @@ function Heading(props: IHeading) {
         });
     }, [])
 
+
     return (
         <motion.form
+            key={props.id}
             exit={{scale: [0.5, 0]}} animate={{
             scale: [0.5, 1],
             borderRadius: ["20%", "0%"],
-        }} className='border w-full text-left py-4  px-2 relative'>
-            <div className="absolute top-0 right-0 flex ">
-                {!isEdit && <IconButton style={iconButton.secondary} Icon={<MdModeEdit/>}
-                                        onclick={() => handleEdit(props.index)}/>}
-                {isEdit && <IconButton style={iconButton.primary} Icon={<AiOutlineCheck/>}
-                                       onclick={() => handleEdit(props.index)}/>}
+        }} className='group border w-full text-left py-4  px-2 relative'>
+            <div className="  absolute top-0 right-0 flex ">
+
+
+                <IconButton style={iconButton.secondary} Icon={!isEdit ? <MdModeEdit/> : <AiOutlineCheck/>}
+                            onclick={() => handleEdit(props.id, data, setData, handleSubmit, isEdit, setIsEdit)}/>
+
                 <IconButton style={iconButton.error} Icon={<MdDeleteForever/>}
-                            onclick={() => handleDelete(props.index)}/>
+                            onclick={() =>
+                                handleDelete(props.id, setData)
+                            }/>
             </div>
             <TextInputShow type={inputType.text} style={heading.title} name={'title'} isEdit={isEdit}
                            register={register}
