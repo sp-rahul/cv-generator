@@ -1,4 +1,4 @@
-import React, {useEffect} from "react"
+import React, {useEffect, useRef} from "react"
 import DropDown from "../../@common/components/DropDown";
 import {Types} from "../../@common/interface/interface";
 import Summary from "./components/Summary";
@@ -11,6 +11,10 @@ import Project from "./components/Project";
 import Education from "./components/Education";
 import Basic_info from "./components/Basic_info";
 import Picture from "./components/Picture";
+import IconButton from "../../@common/components/IconButton";
+import {iconButton} from "../../@common/style/style";
+import {BiDownload} from "react-icons/bi";
+import jsPDF from "jspdf";
 
 type FormValues = {
     title: string;
@@ -109,24 +113,71 @@ export default function Home() {
 
     }
 
+    const reportTemplateRef = useRef(null);
+
+    const handleGeneratePdf = () => {
+        // const doc = new jsPDF('p', 'px', [1050, 1485]);
+        //
+        //
+        // // Adding the fonts.
+        // doc.setFont('arial', 'normal');
+        //
+        // // @ts-ignore
+        // doc.html(reportTemplateRef.current, {
+        //         async callback(doc: jsPDF) {
+        //
+        //             await doc.save('document');
+        //             window.open(doc.output('bloburl')); // To debug.
+        //         }
+        //     },
+        // );
+
+        const content = document.getElementById('divToPrint')!
+        console.log("content", content)
+
+        const doc = new jsPDF('p', 'px', "a4");
+        doc.html(content, {
+            callback: function (doc) {
+                doc.save('sample.pdf');
+                window.open(doc.output('bloburl'));
+            },
+            html2canvas: {scale: 0.43}
+        });
+        // doc.save("a4.pdf");
+        // window.open(doc.output('bloburl'));
+    };
+
+
     return (
-        <DBContext.Provider value={{data, setData, register, reset, setValue, getValues, init}}>
 
-            <div id="divToPrint" className="mx-40  rounded min-h-screen bg-gray-50 flex flex-col items-center">
-
-
-                <AnimatePresence>
-                    {
-                        data.map((item: any, index: number) => {
-                            return renderSection({...item, index})
-                        })
-                    }
-                </AnimatePresence>
-                <div data-html2canvas-ignore="true" className="m-2">
-                    <DropDown items={dropDownItems}/>
-
-                </div>
+        <>
+            <div className="float-right sticky top-0 ">
+                <IconButton style={iconButton.download} Icon={<BiDownload/>}
+                            onclick={handleGeneratePdf}/>
             </div>
-        </DBContext.Provider>
+
+            <DBContext.Provider value={{data, setData, register, reset, setValue, getValues, init}}>
+
+
+                <div ref={reportTemplateRef} id="divToPrint"
+                     className="mx-40  rounded min-h-screen bg-gray-50 flex flex-col items-center">
+
+
+                    <AnimatePresence>
+                        {
+                            data.map((item: any, index: number) => {
+                                return renderSection({...item, index})
+                            })
+                        }
+                    </AnimatePresence>
+                    <div data-html2canvas-ignore="true" className="m-2">
+                        <DropDown items={dropDownItems}/>
+
+                    </div>
+                </div>
+            </DBContext.Provider>
+
+
+        </>
     )
 }

@@ -106,6 +106,8 @@ function Picture(props: IPicture) {
                     <input className={`${preview && 'hidden'}`} name="thumbnail" id="thumbnail" type='file'
                            onChange={onSelectFile}/>
                     {preview && <label htmlFor='thumbnail'>
+                        <input name="thumbnail" id="thumbnail" type='file'
+                               onChange={onSelectFile}/>
                         <img
                             className={`h-auto max-w-lg rounded-lg ${!preview && 'hidden'}`}
                             style={{width: 200, height: 150}}
